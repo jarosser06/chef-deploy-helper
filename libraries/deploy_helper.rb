@@ -31,7 +31,6 @@ module Application
 
       def info(environment)
         create_cache_dir
-        puts @deploy_key
 
         unless @deploy_key.nil?
           create_ssh_wrapper
