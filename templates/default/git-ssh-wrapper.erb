@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# SSH wrapper for deploying from private Git repository
+#
+# Rendered by Chef - local changes will be replaced
+
+/usr/bin/env ssh -o "StrictHostKeyChecking=no" -i "<%= @cache_dir %>/id_deploy" $1 $2
