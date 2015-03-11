@@ -8,7 +8,7 @@ require 'chef/provider/directory'
 module Application
   module DeployHelper
 
-    def app_deploy_info(repo, deploy_key=nil, revision='master')
+    def git_deployment_info(repo, deploy_key=nil, revision='master')
       install_git
       app = Application.new(run_context, repo, deploy_key, revision)
       app.info(node.chef_environment)
@@ -57,7 +57,7 @@ module Application
       def checkout_git_repo
         repo = Chef::Resource::Git.new(repo_name, @run_context)
         repo.repository @repo
-        repo.ssh_wrapper ssh_wrapper
+        repo.ssh_wrapper ssh_wrapper unless @deploy_key.nil?
         repo.reference @revision
         repo.destination ::File.join(@cache_dir, 'cache')
         repo.run_action :sync
@@ -73,8 +73,12 @@ module Application
 
       def repo_name
         return @repo_name unless @repo_name.nil?
-        uri_path = URI.parse(@repo).path
-        @repo_name = uri_path.byteslice(1, uri_path.length)
+        begin
+          uri_path = URI.parse(@repo).path
+          @repo_name = uri_path.byteslice(1, uri_path.length)
+        rescue
+          @repo_name = @repo.split(':').last
+        end
         @repo_name.gsub!('/', '_')
         @repo_name
       end
@@ -97,9 +101,10 @@ module Application
       end
 
       def create_deploy_key
-        key = ::File.join(@cache_dir, '.id_deploy')
+        key = ::File.join(@cache_dir, 'id_deploy')
         deploy_key = Chef::Resource::File.new(key, @run_context)
         deploy_key.mode 0400
+        deploy_key.sensitive true
         deploy_key.owner 'root'
         deploy_key.group 'root'
         deploy_key.content @deploy_key

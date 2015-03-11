@@ -1,20 +1,40 @@
 deploy-helper Cookbook
 ======================
 It leaves the application deployment purely in the
-hands of the developer.  It Inherits from the deploy
-resource and expects a YAML file in the git resource
-to have deployment instructions.
+hands of the developer.  It provides a clean way to
+gather deployment details from an application repo
+that can then be used during the primary application
+deployment.
+
+This is very basic and only supports git at the moment.
 
 Usage
 -----
+Add a .deploy.yml file to the git application repo
+you plan to use for an application deployment and
+use the helper method.
 
 ```yaml
 ---
 revision:
-  - default: master
-  - production: prod
-  - staging: staging
-  - dev: dev
+  default: master
+  production: prod
+  staging: staging
+  dev: dev
+migrate:
+  default: false
+  proudction: true
+```
+
+The helper method returns a mash of the yaml info,
+that should represent the Chef environment so if
+revision is set for production but not master it
+will just use whatever the default is.
+
+```ruby
+app_repo = 'git@github.com:jarosser06/magic'
+deploy_key = data_bag_item('secrets', 'deploy_key')
+app_info = git_deployment_info(app_repo, deploy_key['key'])
 ```
 
 Contributing

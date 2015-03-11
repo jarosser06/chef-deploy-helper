@@ -1,10 +1,10 @@
-app_deploy CHANGELOG
-====================
+deploy-helper CHANGELOG
+=======================
 
 
-0.1.0
+0.0.1
 -----
-- [jarosser06] - Initial release of app_deploy
+- [jarosser06] - Initial release of deploy-helper
 
 - - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
