@@ -1,6 +1,10 @@
 deploy-helper CHANGELOG
 =======================
 
+0.0.2
+-----
+- [jarosser06] - Removed random puts of deploy key
+
 
 0.0.1
 -----
