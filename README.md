@@ -23,9 +23,15 @@ revision:
   dev: dev
 migrate:
   default: false
-  proudction: true
+  production: true
+before_restart:
+  default:
+    - /bin/ls
+  production:
+    - rake db:migrate
 ```
 
+### git_deployment_info
 The helper method returns a mash of the yaml info,
 that should represent the Chef environment so if
 revision is set for production but not master it
@@ -36,6 +42,26 @@ app_repo = 'git@github.com:jarosser06/magic'
 deploy_key = data_bag_item('secrets', 'deploy_key')
 app_info = git_deployment_info(app_repo, deploy_key['key'])
 ```
+
+### deploy_task
+The resource that can execute commands given in the deploy.yml
+file based on information in the deploy.yml file.
+
+```ruby
+git 'github.com:myco/myapp.git' do
+  action :sync
+end
+
+myenv = {'HOME' => '/var/www'}
+deploy_task 'before_restart' do
+  action :execute
+  environment myenv
+end
+```
+
+### deploy_cron
+A resource that creates a cron job from the deploy.yml
+file.
 
 Contributing
 ------------
