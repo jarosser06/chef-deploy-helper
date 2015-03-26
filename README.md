@@ -24,11 +24,18 @@ revision:
 migrate:
   default: false
   production: true
-before_restart:
+cron_jobs:
   default:
-    - /bin/ls
-  production:
-    - rake db:migrate
+    reindex_job:
+      command: /usr/local/bin/reindex-something
+      hour: 1
+      minute: 0
+tasks:
+  before_restart:
+    all:
+      - rake assets:precompile
+    production:
+      - rake db:migrate
 ```
 
 ### git_deployment_info
@@ -43,7 +50,7 @@ deploy_key = data_bag_item('secrets', 'deploy_key')
 app_info = git_deployment_info(app_repo, deploy_key['key'])
 ```
 
-### deploy_task
+### deployment_tasks
 The resource that can execute commands given in the deploy.yml
 file based on information in the deploy.yml file.
 
@@ -53,14 +60,14 @@ git 'github.com:myco/myapp.git' do
 end
 
 myenv = {'HOME' => '/var/www'}
-deploy_task 'before_restart' do
+deployment_tasks 'before_restart' do
   action :execute
   environment myenv
 end
 ```
 
-### deploy_cron
-A resource that creates a cron job from the deploy.yml
+### deployment_crons
+A resource that creates a cron jobs from the deploy.yml
 file.
 
 Contributing
